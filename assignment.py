@@ -99,7 +99,6 @@ class ModelPart1:
         x = linear_unit(inputs, self.W1, self.B1)
 
         second_layer_input = tf.nn.relu(x)
-        print(second_layer_input.shape)
 
         second_layer_output = linear_unit(second_layer_input, self.W2, self.B2)
         return second_layer_output

@@ -219,7 +219,6 @@ def train(model, train_inputs, train_labels):
         labels = train_labels[start:start + model.batch_size]
 
         with tf.GradientTape() as tape:
-            tape.watch(model.filters)
             model_output = model.call(inputs)
             calculated_loss = loss(model_output, labels)
         gradients = tape.gradient(calculated_loss, model.trainable_variables)

@@ -221,8 +221,6 @@ def train(model, train_inputs, train_labels):
             calculated_loss = loss(model_output, labels)
         gradients = tape.gradient(calculated_loss, model.trainable_variables)
         model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        if start % 9999 == 0:
-            print(accuracy(model_output, labels))
 
 def test(model, test_inputs, test_labels):
     """

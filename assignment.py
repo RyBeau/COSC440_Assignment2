@@ -104,6 +104,74 @@ class ModelPart1:
         return second_layer_output
 
 
+class ModelPart3:
+    def __init__(self):
+        """
+        This model class contains a multi-layer network
+        """
+
+        self.batch_size = 64
+        self.num_classes = 2
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+
+        input_layer_1 = 9216
+        output_layer_1 = 256
+        input_layer_2 = 256
+        output_layer_2 = 2
+
+        self.strides = [1, 1, 1, 1]
+
+        self.filters = tf.Variable(tf.random.truncated_normal([5, 5, 3, 16],
+                                                              dtype=tf.float32,
+                                                              stddev=0.1),
+                                   name="filters")
+        self.W1 = tf.Variable(tf.random.truncated_normal([input_layer_1, output_layer_1],
+                                                         dtype=tf.float32,
+                                                         stddev=0.1),
+                              name="W1")
+        self.B1 = tf.Variable(tf.random.truncated_normal([1, output_layer_1],
+                                                         dtype=tf.float32,
+                                                         stddev=0.1),
+                              name="B1")
+
+        self.W2 = tf.Variable(tf.random.truncated_normal([input_layer_2, output_layer_2],
+                                                         dtype=tf.float32,
+                                                         stddev=0.1),
+                              name="W2")
+        self.B2 = tf.Variable(tf.random.truncated_normal([1, output_layer_2],
+                                                         dtype=tf.float32,
+                                                         stddev=0.1),
+                              name="B2")
+
+        self.trainable_variables = [self.filters, self.W1, self.B1, self.B2, self.W2]
+
+    def call(self, inputs):
+        """
+        Runs a forward pass on an input batch of images.
+        :param inputs: images, shape of (num_inputs, 32, 32, 3); during training, the shape is (batch_size, 32, 32, 3)
+        :return: logits - a matrix of shape (num_inputs, num_classes); during training, it would be (batch_size, 2)
+        """
+        # Remember that
+        # shape of input = (num_inputs (or batch_size), in_height, in_width, in_channels)
+
+        # this reshape "flattens" the image data
+
+        # Convolution Layer
+        convolution_output = tf.nn.conv2d(inputs, self.filters, self.strides, padding="VALID")
+        # Relu call on convolution
+        conv_relu = tf.nn.relu(convolution_output)
+        # Pooling
+        pooled = tf.nn.max_pool2d(conv_relu, [5, 5], strides=self.strides, padding="VALID")
+        # Flatten
+        pooled = tf.reshape(pooled, [pooled.shape[0], -1])
+        # First Dense Layer
+        x = linear_unit(pooled, self.W1, self.B1)
+        # Relu for First Dense Layer
+        second_layer_input = tf.nn.relu(x)
+        # Second Layer
+        second_layer_output = linear_unit(second_layer_input, self.W2, self.B2)
+        return second_layer_output
+
 
 def loss(logits, labels):
     """
@@ -147,18 +215,17 @@ def train(model, train_inputs, train_labels):
     :return: None
     '''
     for start in range(0, len(train_inputs), model.batch_size):
-        inputs = train_inputs[start:start+model.batch_size]
-        labels = train_labels[start:start+model.batch_size]
+        inputs = train_inputs[start:start + model.batch_size]
+        labels = train_labels[start:start + model.batch_size]
 
         with tf.GradientTape() as tape:
+            tape.watch(model.filters)
             model_output = model.call(inputs)
             calculated_loss = loss(model_output, labels)
-        if start % 9999 == 0:
-            print(accuracy(model_output, labels))
         gradients = tape.gradient(calculated_loss, model.trainable_variables)
         model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-        
-  
+        if start % 9999 == 0:
+            print(accuracy(model_output, labels))
 
 def test(model, test_inputs, test_labels):
     """
@@ -208,6 +275,7 @@ CLASS_CAT = 3
 CLASS_DOG = 5
 EPOCHS = 25
 
+
 def main(cifar10_data_folder):
     '''
 	Read in CIFAR10 data (limited to 2 classes), initialize your model, and train and
@@ -219,18 +287,22 @@ def main(cifar10_data_folder):
     train_inputs, train_labels = get_data(cifar10_data_folder + "train", CLASS_CAT, CLASS_DOG)
     model0 = ModelPart0()
     model1 = ModelPart1()
+    model3 = ModelPart3()
     for i in range(0, EPOCHS):
         indices = range(0, len(train_inputs))
         indices = tf.random.shuffle(indices)
         train_inputs = tf.gather(train_inputs, indices)
         train_labels = tf.gather(train_labels, indices)
-        train(model0, train_inputs, train_labels)
-        train(model1, train_inputs, train_labels)
+        # train(model0, train_inputs, train_labels)
+        # train(model1, train_inputs, train_labels)
+        train(model3, train_inputs, train_labels)
     test_inputs, test_labels = get_data(cifar10_data_folder + "test", CLASS_CAT, CLASS_DOG)
-    model0_accuracy = test(model0, test_inputs, test_labels)
-    model1_accuracy = test(model1, test_inputs, test_labels)
-    print("Final Accuracy (Model 0): ", model0_accuracy)
-    print("Final Accuracy (Model 1): ", model1_accuracy)
+    # model0_accuracy = test(model0, test_inputs, test_labels)
+    # model1_accuracy = test(model1, test_inputs, test_labels)
+    model3_accuracy = test(model3, test_inputs, test_labels)
+    # print("Final Accuracy (Model 0): ", model0_accuracy)
+    # print("Final Accuracy (Model 1): ", model1_accuracy)
+    print("Final Accuracy (Model 3): ", model3_accuracy)
     return
 
 

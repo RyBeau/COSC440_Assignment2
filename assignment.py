@@ -154,8 +154,6 @@ class ModelPart3:
         # Remember that
         # shape of input = (num_inputs (or batch_size), in_height, in_width, in_channels)
 
-        # this reshape "flattens" the image data
-
         # Convolution Layer
         convolution_output = tf.nn.conv2d(inputs, self.filters, self.strides, padding="VALID")
         # Relu call on convolution

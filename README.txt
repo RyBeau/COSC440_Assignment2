@@ -1,35 +1,36 @@
 # README CNN_CIFAR
 ## Q1
-- Everything has been implemented. The only problems are some occasional floating point errors when the tests are comparing floats.
+Everything has been implemented. The only problems are some occasional floating point errors when the tests are comparing floats.
 
 ## Q2
 The convolutional neural network is better for identifying the digit in each of the three images. This
 is because the convolutional layer(s) make the network more translation invariant in comparison the
-feed-forward network. Meaning that the CNN is less likely to mis-classify the digit due to the change in location
-in the image.
+feed-forward network. Meaning that the convolutional neural net is less likely to mis-classify the digit due to 
+the change in location in the image.
 
 ## Q3
 w1 = [-0.94, -0.83, 1.8]
 
-w1 = [-1.5, 1.6, -0.10]
+w2 = [-1.5, 1.6, -0.10]
 
 ReLU(x) = x if x > 0 else 0
 
 output = ReLU(x1 * w1 + x2 * w2)
 
 ## Q4
-A) The researchers say that curvature of the upper lip is 23% larger for criminals than non-criminals. 
-The distance between the two inner corners of the eyes is 6% shorter for criminals than non-criminals, and
-the angle between two lines drawn from the tip of the nose to the corners of the mouth, which is 20% smaller
-for criminals. Additionally, the researchers say that there is greater variance in the faces of criminals,
+A) The factors that researchers say contribute to criminality are
+- The curvature of the upper lip is 23% larger for criminals than non-criminals. 
+- The distance between the two inner corners of the eyes is 6% shorter for criminals than non-criminals.
+- The angle between two lines is drawn from the tip of the nose to the corners of the mouth is 20% smaller
+for criminals. 
+  
+Additionally, the researchers say that there is greater variance in the faces of criminals,
 whereas faces of non-criminals have a closer resemblance to each other.
 
-B)
-The angle between two lines drawn from the tip of the nose to the corners of the mouth is a potentially confounding variable 
+B) The angle between two lines drawn from the tip of the nose to the corners of the mouth is a potentially confounding variable 
 that the algorithm learned as the position of the corners of the mouth can change depending upon the facial expression.
 
-
-In my opinion this algorithm has not been tested with a large and diverse dataset for it to be considered effective.
+In my opinion this algorithm has not been tested with a large or diverse enough dataset for it to be considered effective.
 The dataset used only contained 1856 images, all of which were of Chinese men. I suspect that the introduction
 of different races and genders will cause the algorithm to be far less effective. The researchers say that criminals faces
 have a greater variance than non-criminals. This could be caused by dataset of non-criminal faces not being truly 
